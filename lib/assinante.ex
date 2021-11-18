@@ -75,4 +75,14 @@ defmodule Assinante do
         {:error, "Arquivo inválido"}
     end
   end
+
+  def deletar(numero) do
+    assinante = buscar_assinante(numero)
+    result_delete = buscar_todos_assinantes()
+    |> List.delete(assinante)
+    |> :erlang.term_to_binary()
+    |> write(assinante.plano)
+    {result_delete, "Assinante #{assinante.nome} deletado"}
+
+  end
 end

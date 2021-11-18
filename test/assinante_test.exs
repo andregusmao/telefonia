@@ -44,4 +44,12 @@ defmodule AssinanteTest do
       assert Assinante.buscar_assinante("123", :prepago).nome == "André"
     end
   end
+
+  describe "delete" do
+    test "deve deletar o assinante" do
+      Assinante.cadastrar("André", "123", "456", :pospago)
+      Assinante.cadastrar("João", "456", "888", :pospago)
+      assert Assinante.deletar("123") == {:ok, "Assinante André deletado"}
+    end
+  end
 end
