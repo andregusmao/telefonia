@@ -34,7 +34,7 @@ defmodule Assinante do
 
   ## Exemplo
 
-      iex> Assinante.cadastrar("André", "123", "456")
+      iex> Assinante.cadastrar("André", "123", "456", :prepago)
       {:ok, "Assinante André cadastrado com sucesso"}
 
   ## Informações adicionais
@@ -43,23 +43,33 @@ defmodule Assinante do
 
   ## Exemplo
 
-      iex> Assinante.cadastrar("André", "123", "456")
+      iex> Assinante.cadastrar("André", "123", "456", :prepago)
       {:ok, "Assinante André cadastrado com sucesso"}
-      iex> Assinante.cadastrar("André", "123", "456")
+      iex> Assinante.cadastrar("André", "123", "456", :prepago)
       {:error, "Assinante já cadastrado com esse número"}
 
   """
-  def cadastrar(nome, numero, cpf, plano \\ :prepago) do
+  def cadastrar(nome, numero, cpf, :prepago), do: cadastrar(nome, numero, cpf, %Prepago{})
+  def cadastrar(nome, numero, cpf, :pospago), do: cadastrar(nome, numero, cpf, %Pospago{})
+  def cadastrar(nome, numero, cpf, plano) do
     case buscar_assinante(numero) do
       nil ->
-        (read(plano) ++ [%__MODULE__{nome: nome, numero: numero, cpf: cpf, plano: plano}])
+        assinante = %__MODULE__{nome: nome, numero: numero, cpf: cpf, plano: plano}
+        (read(pega_plano(assinante)) ++ [assinante])
         |> :erlang.term_to_binary()
-        |> write(plano)
+        |> write(pega_plano(assinante))
 
         {:ok, "Assinante #{nome} cadastrado com sucesso"}
 
       _assinante ->
         {:error, "Assinante já cadastrado com esse número"}
+    end
+  end
+
+  defp pega_plano(assinante) do
+    case assinante.plano.__struct__ == Prepago do
+      true -> :prepago
+      false -> :pospago
     end
   end
 

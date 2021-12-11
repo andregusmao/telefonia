@@ -20,13 +20,13 @@ defmodule AssinanteTest do
     end
 
     test "criar uma conta pré" do
-      assert Assinante.cadastrar("André", "123", "456") ==
+      assert Assinante.cadastrar("André", "123", "456", :prepago) ==
                {:ok, "Assinante André cadastrado com sucesso"}
     end
 
     test "deve retornar erro dizendo que assinantes já está cadastrado" do
-      Assinante.cadastrar("André", "123", "456")
-      assert Assinante.cadastrar("André", "123", "456") ==
+      Assinante.cadastrar("André", "123", "456", :prepago)
+      assert Assinante.cadastrar("André", "123", "456", :prepago) ==
                {:error, "Assinante já cadastrado com esse número"}
     end
   end
@@ -36,6 +36,7 @@ defmodule AssinanteTest do
       Assinante.cadastrar("André", "123", "456", :pospago)
 
       assert Assinante.buscar_assinante("123", :pospago).nome == "André"
+      assert Assinante.buscar_assinante("123", :pospago).plano.__struct__ == Pospago
     end
 
     test "busca pré" do
